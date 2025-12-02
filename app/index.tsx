@@ -8,19 +8,42 @@
   - At the bottom, we define styles (like CSS for React Native) using StyleSheet.create.
 */
 import React, { useState } from "react"; // Import React and the useState hook to store input values
-import { Text, View, TextInput, TouchableOpacity, StyleSheet } from "react-native"; // Import basic UI building blocks
+import {Text, Alert, View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator} from "react-native"; // Import basic UI building blocks
 import { useRouter } from "expo-router"; // Import navigation helper to move between screens
 import { useTheme } from "./theme";
 
+//firebase imports
+import {signInWithEmailAndPassword} from "firebase/auth";
+import {auth} from "./firebase"
+
 export default function Index() { // Define the main component for this screen
   const [email, setEmail] = useState(""); // email will store what's typed in the Email field
-  const [password, setPassword] = useState(""); // password will store what's typed in the Password field
+  const [password, setPassword] = useState(""); // password will store what's typed in the Password fiel
+  const [loading, setLoading] = useState(false);
   const router = useRouter(); // router lets us navigate to other screens
   const { colors } = useTheme();
 
-  const onLogin = () => { // Function that runs when the Login button is pressed
+  const onLogin = async () => { // Function that runs when the Login button is pressed
     // Navigate to Home page
-    router.push("/home"); // Tell the app to show the Home screen
+    if(email===""||password===""){
+        Alert.alert("please enter both email and password")
+        return;
+    }
+    setLoading(true);
+    try{
+        await signInWithEmailAndPassword(auth,email,password);
+
+        router.replace("/home");
+    }
+    catch(error: any){
+        let messaage = "Something went wrong";
+        if(error.code ==="auth/invalid-credential") messaage = "Invalid email or password";
+        if(error.code ==="auth/user-not-found") messaage = "User not found";
+        Alert.alert("login failed", messaage);
+    }
+    finally{
+        setLoading(false);
+    }
   };
 
   return ( // Describe what we want to show on the screen
@@ -50,8 +73,15 @@ export default function Index() { // Define the main component for this screen
           onChangeText={setPassword} // Update password state whenever the user types
         />
 
-        <TouchableOpacity style={styles.button} onPress={onLogin} activeOpacity={0.8}>
-          <Text style={styles.buttonText}>Login</Text>
+        <TouchableOpacity style={[styles.button, {opacity: loading ? 0.7:1}]}
+          onPress={onLogin}
+          activeOpacity={0.8}
+          disabled={loading}
+        >
+          {loading? (
+              <ActivityIndicator size="small" color="white" />) : (
+                  <Text style = {styles.buttonText}>Login</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>

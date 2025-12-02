@@ -1,21 +1,29 @@
-/*
-  Beginner-friendly walkthrough of this file (Home screen):
-  - The next four lines import the tools we need from React and React Native.
-  - React lets us build UI with components.
-  - View/Text/StyleSheet/TouchableOpacity are basic building blocks in React Native.
-  - Ionicons gives us ready-made icons.
-  - useRouter comes from expo-router and lets us navigate between screens.
-*/
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import React,{useEffect, useState} from "react";
+import { View, Alert, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTheme } from "./theme";
 
-export default function Home() { // This component is the Home screen
-  const router = useRouter(); // Get the router so we can navigate to other screens
+export default function Home() {
+  const router = useRouter();
   const { colors } = useTheme();
-  const onSpeak = () => {}; // Placeholder for the SPEAK button action
+  const [userEmail, setUserEmail] = useState("Student");
+
+  //check what user is logged in when the screen loads
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth,(user) =>{
+            if(user && user.email){
+                const name = user.email.split("@")[0];
+                setUserEmail(name.charAt(0).toUpperCase() + name.slice(1));
+            }
+            else{
+                router.replace("/");
+            }
+        })
+    }, []);
+  const onSpeak = () => {Alert.alert("Ai speech feature coming soon");}; // Placeholder for the SPEAK button action
   const onNotification = () => router.push("/notification"); // Go to the Notification screen
   const onSetting = () => router.push("/setting"); // Go to the Setting screen
   const onBeginFocus = () => router.push("/begin_focus"); // Go to the Begin Focus chat screen
@@ -24,6 +32,7 @@ export default function Home() { // This component is the Home screen
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }] }>
+        <Text style={[styles.welcometext]}> Welcome, {userEmail}</Text>
       {/* Top Left: Setting */}
       <TouchableOpacity style={[styles.topButton, styles.topLeft, { borderColor: colors.border, backgroundColor: colors.card }]} onPress={onSetting} activeOpacity={0.8}>
         <Ionicons name="settings-outline" size={18} color={typeof colors.text === 'string' ? colors.text as string : undefined} style={styles.icon} />
@@ -61,7 +70,6 @@ export default function Home() { // This component is the Home screen
   );
 }
 
-const BUTTON_BLUE = "dodgerblue";
 
 const styles = StyleSheet.create({
   container: {
@@ -84,6 +92,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "lightgray",
     backgroundColor: "whitesmoke",
+  },
+  welcometext:{
+      position: "absolute",
+      top: 100,
+      fontSize: 20,
+      fontWeight: "bold",
+      color: "black"
+
   },
   topLeft: {
     left: 20,

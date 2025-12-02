@@ -1,19 +1,11 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTheme } from "./theme";
-import { modulesData } from "../data/modules";
-
 export default function Progress(){
   const { colors } = useTheme();
 
   // Count modules by the three canonical colors
-  const counts = useMemo(() => {
-    const base = { red: 0, green: 0, orange: 0 } as Record<'red'|'green'|'orange', number>;
-    for (const m of modulesData) {
-      if (m.color in base) base[m.color as 'red'|'green'|'orange'] += 1;
-    }
-    return base;
-  }, []);
+
 
   const items: { key: 'red'|'green'|'orange'; label: string; color: string }[] = [
     { key: 'red', label: 'Urgent', color: 'red' },
@@ -21,8 +13,6 @@ export default function Progress(){
     { key: 'orange', label: 'Due soon', color: 'orange' },
   ];
 
-  const maxVal = Math.max(1, ...items.map(i => counts[i.key]));
-  const chartHeight = 180; // px
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -36,30 +26,7 @@ export default function Progress(){
         {/* Y-axis baseline */}
         <View style={[styles.axis, { backgroundColor: colors.border }]} />
 
-        <View style={styles.barsRow}>
-          {items.map((it) => {
-            const value = counts[it.key];
-            const height = (value / maxVal) * chartHeight;
-            return (
-              <View key={it.key} style={styles.barWrapper}>
-                {/* Value label above bar */}
-                <Text style={[styles.valueLabel, { color: colors.text }]}>{value}</Text>
-                <View
-                  style={[
-                    styles.bar,
-                    {
-                      height,
-                      backgroundColor: it.color,
-                      borderColor: colors.border,
-                    },
-                  ]}
-                  accessibilityLabel={`${it.label} count ${value}`}
-                />
-                <Text style={[styles.barLabel, { color: colors.text }]}>{it.label}</Text>
-              </View>
-            );
-          })}
-        </View>
+
       </View>
       <Text style={[styles.hint, { color: colors.subtleText as string | undefined }]}>Add a new module with color red/green/orange and the corresponding bar will grow.</Text>
     </View>
