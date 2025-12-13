@@ -10,6 +10,7 @@ import {
   FlatList,
   Text,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Ionicons } from "@expo/vector-icons";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,12 +24,22 @@ type Message = {
   text: string;
 };
 
+const STORAGE_KEY = "begin_focus_messages_v1";
+
+const API_URL= Platform.select({
+    ios: "http://192.168.0.19:3000/api/chat",
+    android: "http://192.168.0.19:3000/api/chat", // Android emulator
+    default: "http://192.168.0.19:3000/api/chat",
+})
+const API_KEY= "my-very-secret-string";
+
 export default function BeginFocus() {
   // State
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     { id: "m1", role: "ai", text: "Hi! What would you like to focus on today?" },
   ]);
+  const[sending, setSending] = useState(false);
 
   // Layout helpers
   const headerHeight = useHeaderHeight();
@@ -39,28 +50,83 @@ export default function BeginFocus() {
   // Keyboard offset
   const keyboardOffset = Platform.select({ ios: headerHeight, android: headerHeight + 8 }) as number;
 
+  //persist saved chats
+    useEffect(() => {
+        (async () => {
+            try{
+                const raw = await AsyncStorage.getItem(STORAGE_KEY);
+                if(raw){
+                    const saved = JSON.parse(raw) as Message[];
+                    if(Array.isArray(saved) && saved.length>0){
+                        setMessages(saved);
+                    }
+                }
+            }catch(e){
+                console.log("failed to load messages ",e);
+            }
+        })();
+    }, []);
+
+    useEffect(()=>{
+        const timeout = setTimeout(()=>{
+            AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(messages)).catch(()=>{});
+        }, 100);
+        return () => clearTimeout(timeout);
+    }, [messages]);
+
   // Auto-scroll to bottom
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      listRef.current?.scrollToEnd({ animated: true });
-    }, 50);
+    const timeout = setTimeout(() => listRef.current?.scrollToEnd({ animated: true }),50);
     return () => clearTimeout(timeout);
-  }, [messages]);
+    },[messages]);
 
+    const payload = {messages};
   // Send a message and simulate a short AI reply
-  const onSend = () => {
+  const onSend = async () => {
     const trimmed = text.trim();
-    if (!trimmed) return;
-    const newMsg: Message = { id: String(Date.now()), role: "user", text: trimmed };
-    setMessages((prev) => [...prev, newMsg]);
-    setText("");
+    if (!trimmed || sending) return;
 
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { id: String(Date.now() + 1), role: "ai", text: "Okay, lets start with the basics." },
-      ]);
-    }, 500);
+    const userMsg: Message = { id: String(Date.now()), role: "user", text: trimmed };
+    const nextMessage=[...messages, userMsg];
+
+    setMessages(nextMessage);
+    setText("");
+    setSending(true);
+
+    try{
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(nextMessage)).catch(()=>{});
+        const response = await fetch(API_URL!,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-api-key": API_KEY,
+            },
+            body: JSON.stringify({messages:nextMessage}),
+        });
+
+        if(!response.ok){
+            const errorText = await response.text();
+            throw new Error(`API error ${response.status}: ${errorText}`);
+        }
+        const data = await response.json();
+        const aiText: string = data?.reply?? "sorry, i couldnt generate a reply,";
+        const aiMessage: Message = {id: String(Date.now()+1), role: "ai", text: aiText};
+        const finalMessage =[...nextMessage, aiMessage];
+        setMessages(finalMessage);
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(finalMessage)).catch(()=>{});
+    } catch(err:any){
+        const aiMsg: Message= {
+            id: String(Date.now()+1),
+            role: "ai",
+            text: err?.message || "please try again, network error",
+        };
+        const errMessage = [...nextMessage, aiMsg];
+        setMessages(errMessage);
+        await  AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(errMessage)).catch(()=>{});
+    } finally{
+        setSending(false);
+    }
+
   };
 
   // Render a single chat bubble (left for AI, right for user)
