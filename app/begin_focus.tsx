@@ -26,6 +26,7 @@ type Message = {
 
 const STORAGE_KEY = "begin_focus_messages_v1";
 
+
 const API_URL= Platform.select({
     ios: "http://192.168.0.19:3000/api/chat",
     android: "http://192.168.0.19:3000/api/chat", // Android emulator
@@ -49,7 +50,15 @@ export default function BeginFocus() {
 
   // Keyboard offset
   const keyboardOffset = Platform.select({ ios: headerHeight, android: headerHeight + 8 }) as number;
-
+    async function clearSession() {
+        try {
+            await AsyncStorage.removeItem(STORAGE_KEY);
+        } catch (e) {
+            console.log("Failed to clear storage:", e);
+        }
+        setMessages([{ id: "m1", role: "ai", text: "Hi! What would you like to focus on today?" }]);
+        setText("");
+    }
   //persist saved chats
     useEffect(() => {
         (async () => {
@@ -178,6 +187,13 @@ export default function BeginFocus() {
       />
 
       <View style={[styles.bottomBar, { paddingBottom: Math.max(16, insets.bottom), backgroundColor: colors.card }]}>
+          <View style={styles.rightIcons}>
+              <TouchableOpacity accessibilityLabel="Clear session" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} onPress={clearSession} disabled={sending}>
+                  <Ionicons name="trash-outline" size={20} color={typeof colors.text === "string" ? (colors.text as string) : undefined} />
+              </TouchableOpacity>
+              <View style={{ width: 12 }} />
+
+          </View>
         <View style={[styles.inputPill, { borderColor: colors.border, backgroundColor: colors.card }] }>
           <TextInput
             style={[styles.textInput, { color: colors.text }]}
@@ -194,9 +210,9 @@ export default function BeginFocus() {
               <Ionicons name="mic-outline" size={20} color={typeof colors.text === 'string' ? colors.text as string : undefined} />
             </TouchableOpacity>
             <View style={{ width: 12 }} />
-            <TouchableOpacity accessibilityLabel="Office" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Ionicons name="briefcase-outline" size={20} color={typeof colors.text === 'string' ? colors.text as string : undefined} />
-            </TouchableOpacity>
+              <TouchableOpacity accessibilityLabel="Send" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} onPress={onSend} disabled={sending}>
+                  <Ionicons name="send" size={20} color={typeof colors.text === "string" ? (colors.text as string) : undefined} />
+              </TouchableOpacity>
           </View>
         </View>
       </View>
