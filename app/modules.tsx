@@ -5,8 +5,23 @@ import { Ionicons } from "@expo/vector-icons";
 
 //firebase
 import { db, auth } from "./firebase";
-import {collection, addDoc, query, onSnapshot,deleteDoc, doc, orderBy,where, getDocs} from "firebase/firestore";
+import {writeBatch,getDoc, collection, addDoc, query, onSnapshot,deleteDoc, doc, orderBy,serverTimestamp,where, getDocs} from "firebase/firestore";
 
+//add a notification document for a module
+async function addNotificationForModule(uid: string, data: {
+    text: string;
+    type?: "reminder" | "system" | "ai" | "progress";
+    route?: string;
+    moduleId?: string;
+    severity?: "red" | "orange" | "green";
+}) {
+    await addDoc(collection(db, "users", uid, "notifications"), {
+        ...data,
+        createdAt: serverTimestamp(),
+    });
+}
+
+//modules creation and management
 export default function Modules(){
   const { colors } = useTheme();
 
@@ -39,7 +54,7 @@ export default function Modules(){
         return unsubscribe;
     }, []);
 
-    //save module to firebase
+    //add any new module to Firestore
     const addModule=async()=>{
         if(!newTitle.trim()){
             Alert.alert("Please enter a module title");
@@ -47,12 +62,26 @@ export default function Modules(){
         }
 
         try{
-            await addDoc(collection(db, "users", user!.uid, "modules"),{
-                title:newTitle,
+            const title = newTitle.trim();
+
+            const moduleRef = await addDoc(collection(db, "users", user!.uid, "modules"),{
+                title,
                 color:selectColor,
-                createdAt: new Date()
+                createdAt: serverTimestamp()
             });
 
+            //if new module is red/amber, a notification will be created
+            if(selectColor === "red"|| selectColor=== "orange"){
+                const severityLabel = selectColor === "red"?"urgent" :"amber";
+
+                await addNotificationForModule(user!.uid,{
+                    text: `New ${severityLabel} module: ${title}`,
+                    type: "reminder",
+                    route: "/modules",
+                    moduleId: moduleRef.id,
+                    severity:selectColor as "red"|"orange"
+                })
+            }
             //reset form and close popup
             setNewTitle("");
             setIsModalVisible(false);
@@ -60,17 +89,38 @@ export default function Modules(){
             Alert.alert("cannot save module " + error.message);
         }
     };
-    //delete function
+
+    //delete notifications tied to a module
+    async function deleteNotification(uid: string, moduleId: string){
+        const q= query(
+            collection(db,"users", uid, "notifications"),
+            where("moduleId", "==", moduleId)
+        );
+        const snap = await getDocs(q);
+        if(snap.empty) return;
+        const batch = writeBatch(db);
+        snap.docs.forEach((d)=> batch.delete(d.ref));
+        await  batch.commit();
+    }
+    //delete a module by id
     const deleteModule=async(id:string)=>{
         Alert.alert("Are you sure you want to delete this module?", "", [
             {text: "Cancel"},
-            {text: "delete", style:"destructive", onPress:() => deleteDoc(doc(db,"users",user!.uid,"modules",id))}
+            {text: "delete", style:"destructive", onPress: async() =>{
+                try{
+                    await deleteNotification(user!.uid, id);
+                    await deleteDoc(doc(db,"users",user!.uid,"modules",id));
+                }catch(e: any){
+                    Alert.alert("delete failed", e?.message || "please try again");
+                }
+                }
+            }
 
         ]);
     }
 
     return (
-    // Overall container: "Modules"
+    //overall container: "Modules"
     <View
       style={[styles.container, { backgroundColor: colors.background }]}
     >

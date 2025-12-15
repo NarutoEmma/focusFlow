@@ -1,18 +1,9 @@
-/*
-  Settings screen UI
-  - Two large rectangles stacked vertically.
-  - First large rectangle contains three smaller rows stacked vertically:
-      1) 👔  User details
-      2) 🛡️  Password and security
-      3) ⚙️  Other settings (placeholder)
-  - Second large rectangle contains a setting:
-      - Toggle background  [switch]
-*/
+
 import React from "react";
 import { View, Text, StyleSheet, Switch } from "react-native";
 import { useTheme } from "./theme";
 
-// The main component for the Settings screen
+//Settings screen with theme toggle
 export default function Setting() {
   const { isDark, toggleTheme, colors } = useTheme();
 

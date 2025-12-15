@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTheme } from "./theme";
 
+//Home screen with navigation shortcuts
 export default function Home() {
   const router = useRouter();
   const { colors } = useTheme();
@@ -23,11 +24,22 @@ export default function Home() {
             }
         })
     }, []);
+  //Show placeholder speak alert
   const onSpeak = () => {Alert.alert("Ai speech feature coming soon");}; // Placeholder for the SPEAK button action
+
+    //Open notifications screen
   const onNotification = () => router.push("/notification"); // Go to the Notification screen
+
+    //Open settings screen
   const onSetting = () => router.push("/setting"); // Go to the Setting screen
+
+    //open begin focus screen
   const onBeginFocus = () => router.push("/begin_focus"); // Go to the Begin Focus chat screen
+
+    //Open modules screen
   const onModules = () => router.push("/modules");
+
+  //open progress screen
   const onProgress = () => router.push("/progress"); // Placeholder for the Project button action
 
   return (

@@ -16,6 +16,7 @@ import { useTheme } from "./theme";
 import {signInWithEmailAndPassword} from "firebase/auth";
 import {auth} from "./firebase"
 
+//login screen component
 export default function Index() { // Define the main component for this screen
   const [email, setEmail] = useState(""); // email will store what's typed in the Email field
   const [password, setPassword] = useState(""); // password will store what's typed in the Password fiel
@@ -23,8 +24,9 @@ export default function Index() { // Define the main component for this screen
   const router = useRouter(); // router lets us navigate to other screens
   const { colors } = useTheme();
 
+  //handle login and navigate to home
   const onLogin = async () => { // Function that runs when the Login button is pressed
-    // Navigate to Home page
+    //navigate to Home page
     if(email===""||password===""){
         Alert.alert("please enter both email and password")
         return;

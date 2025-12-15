@@ -4,8 +4,7 @@ import { Stack } from "expo-router";
 import React from "react";
 import { ThemeProvider, useTheme } from "./theme";
 
-// This is the root layout component. expo-router will render this first and
-// then place your screens inside the <Stack /> according to the current route.
+//themed stack navigator with app colors
 function ThemedStack() {
   const { colors } = useTheme();
   return (
@@ -20,6 +19,7 @@ function ThemedStack() {
   );
 }
 
+//root layout providing theme context
 export default function RootLayout() {
   // Returning <Stack /> tells expo-router to use a native-like stack navigation.
   // Each file in the /app directory (like home.tsx, notification.tsx) becomes a screen.

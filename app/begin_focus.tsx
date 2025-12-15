@@ -11,6 +11,7 @@ import {
   Text,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import * as Speech from "expo-speech"
 import { Ionicons } from "@expo/vector-icons";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -34,6 +35,7 @@ const API_URL= Platform.select({
 })
 const API_KEY= "my-very-secret-string";
 
+//Main chat screen component
 export default function BeginFocus() {
   // State
   const [text, setText] = useState("");
@@ -41,15 +43,17 @@ export default function BeginFocus() {
     { id: "m1", role: "ai", text: "Hi! What would you like to focus on today?" },
   ]);
   const[sending, setSending] = useState(false);
+  const[speaking, setSpeaking] = useState<boolean>(false); //Tts playback state
 
-  // Layout helpers
+  //Layout helpers
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<Message>>(null);
   const { colors } = useTheme();
 
-  // Keyboard offset
+  //Keyboard offset
   const keyboardOffset = Platform.select({ ios: headerHeight, android: headerHeight + 8 }) as number;
+    //Clear saved chat session
     async function clearSession() {
         try {
             await AsyncStorage.removeItem(STORAGE_KEY);
@@ -59,7 +63,7 @@ export default function BeginFocus() {
         setMessages([{ id: "m1", role: "ai", text: "Hi! What would you like to focus on today?" }]);
         setText("");
     }
-  //persist saved chats
+  //load persisted saved chats
     useEffect(() => {
         (async () => {
             try{
@@ -75,7 +79,7 @@ export default function BeginFocus() {
             }
         })();
     }, []);
-
+    //persist on change
     useEffect(()=>{
         const timeout = setTimeout(()=>{
             AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(messages)).catch(()=>{});
@@ -83,14 +87,14 @@ export default function BeginFocus() {
         return () => clearTimeout(timeout);
     }, [messages]);
 
-  // Auto-scroll to bottom
+  //Auto-scroll to bottom
   useEffect(() => {
     const timeout = setTimeout(() => listRef.current?.scrollToEnd({ animated: true }),50);
     return () => clearTimeout(timeout);
     },[messages]);
 
     const payload = {messages};
-  // Send a message and simulate a short AI reply
+  //Send message and fetch AI reply
   const onSend = async () => {
     const trimmed = text.trim();
     if (!trimmed || sending) return;
@@ -135,10 +139,29 @@ export default function BeginFocus() {
     } finally{
         setSending(false);
     }
-
   };
+  //perform tts on ai messages
+    //read AI text with TTS
+    const readText = (text: string) => {
+        if(!text) return;
+        //toggle stop if already speaking
+        if(speaking){
+            Speech.stop();
+            setSpeaking(false);
+            return;
+        }
+        setSpeaking(true);
+        Speech.speak(text,{
+            language: "en-US",
+            pitch: 1.0,
+            rate: Platform.OS === "ios"? 1:2.0,
+            onDone:()=> setSpeaking(false),
+            onError:()=> setSpeaking(false),
+            onStopped:() => setSpeaking(false),
+        });
+    };
 
-  // Render a single chat bubble (left for AI, right for user)
+  //render a chat bubble row
   const renderItem = ({ item }: { item: Message }) => {
     const isUser = item.role === "user";
     return (
@@ -150,10 +173,10 @@ export default function BeginFocus() {
         {/* Small microphone button to the right of AI messages for text-to-speech */}
         {!isUser && (
           <TouchableOpacity
-            accessibilityLabel="Text to speech"
+            accessibilityLabel={speaking? "Stop Speech" : "Text to speech"}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            style={styles.ttsButton}
-            onPress={() => { /* reserved for future TTS playback */ }}
+            style={[styles.ttsButton, speaking && {opacity: 0.7}]}
+            onPress={() => readText(item.text)}
           >
             <Ionicons
               name="mic-outline"
@@ -166,10 +189,10 @@ export default function BeginFocus() {
     );
   };
 
+  //extract unique key for messages
   const keyExtractor = (item: Message) => item.id;
 
   return (
-    // Keyboard-avoiding container
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.select({ ios: "padding", android: "height" })}

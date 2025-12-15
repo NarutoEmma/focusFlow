@@ -8,10 +8,12 @@ import {collection, onSnapshot, query} from "firebase/firestore";
 
 type ModuleColor = "red" | "orange" | "green";
 
+//type guard for module colors
 function isModuleColor(value: any): value is ModuleColor {
     return value === "red" || value === "orange" || value === "green";
 }
 
+//progress screen with simple bar chart
 export default function Progress() {
     const {colors} = useTheme();
     const user = auth.currentUser;
@@ -48,7 +50,7 @@ export default function Progress() {
         return base;
     }, [modules]);
 
-    // Count modules by the three canonical color
+    //represent modules by the three canonical color
 
     const items: { key: "red" | "orange" | "green"; label: string; color: string }[] = [
         {key: "red", label: "Urgent", color: "red"},
@@ -59,6 +61,7 @@ export default function Progress() {
 const maxVal= Math.max(1, ...items.map((i)=> counts[i.key]));
 const chartHeight =180;
 
+//show count alert for a bar
 const onPressBar=(key:ModuleColor) => {
     Alert.alert(items.find((i)=> i.key === key)!.label,`${counts[key]} module(s)`);
 }
