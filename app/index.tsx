@@ -1,7 +1,7 @@
 /*
   Beginner-friendly guide to this file (Login screen):
   - Lines below import React, some UI components from React Native, and a navigation helper from expo-router.
-  - Then we define a component called Index which is the default export for this file.
+  - Then we define a component called Login which is the default export for this file.
   - Inside it, we keep track of what the user types for email and password using React "state".
   - We also grab a router object so we can move to the Home screen when the user presses Login.
   - The returned JSX describes how the screen looks: a container, a form, two text inputs, and a button.
@@ -10,14 +10,14 @@
 import React, { useState } from "react"; // Import React and the useState hook to store input values
 import {Text, Alert, View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator} from "react-native"; // Import basic UI building blocks
 import { useRouter } from "expo-router"; // Import navigation helper to move between screens
-import { useTheme } from "./theme";
+import { useTheme } from "../utils/theme";
 
 //firebase imports
 import {signInWithEmailAndPassword} from "firebase/auth";
-import {auth} from "./firebase"
+import {auth} from "../utils/firebase"
 
 //login screen component
-export default function Index() { // Define the main component for this screen
+export default function Login() { // Define the main component for this screen
   const [email, setEmail] = useState(""); // email will store what's typed in the Email field
   const [password, setPassword] = useState(""); // password will store what's typed in the Password fiel
   const [loading, setLoading] = useState(false);
