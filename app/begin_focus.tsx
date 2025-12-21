@@ -15,7 +15,7 @@ import * as Speech from "expo-speech"
 import { Ionicons } from "@expo/vector-icons";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "./theme";
+import { useTheme } from "../utils/theme";
 
 type Role = "user" | "ai";
 

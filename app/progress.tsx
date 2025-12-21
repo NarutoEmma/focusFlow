@@ -1,9 +1,9 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {useTheme} from "./theme";
+import {useTheme} from "../utils/theme";
 
 //firebase
-import {auth, db} from "./firebase";
+import {auth, db} from "../utils/firebase";
 import {collection, onSnapshot, query} from "firebase/firestore";
 
 type ModuleColor = "red" | "orange" | "green";

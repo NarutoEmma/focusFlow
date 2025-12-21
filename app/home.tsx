@@ -1,29 +1,49 @@
-import { auth } from "./firebase";
+import {auth, db} from "../utils/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import React,{useEffect, useState} from "react";
 import { View, Alert, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useTheme } from "./theme";
+import { useTheme } from "../utils/theme";
+import {doc, getDoc} from "firebase/firestore";
 
 //Home screen with navigation shortcuts
 export default function Home() {
   const router = useRouter();
   const { colors } = useTheme();
-  const [userEmail, setUserEmail] = useState("Student");
+  const [userName, setUserName] = useState("Student");
 
   //check what user is logged in when the screen loads
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth,(user) =>{
-            if(user && user.email){
-                const name = user.email.split("@")[0];
-                setUserEmail(name.charAt(0).toUpperCase() + name.slice(1));
-            }
-            else{
+            if(!user ){
                 router.replace("/");
+                return;
             }
-        })
-    }, []);
+            const authName = user.displayName?.trim();
+            if(authName){
+                setUserName(authName);
+                return;
+            }
+            (async () =>{
+                try{
+                    const snap= await getDoc(doc(db,"users",user.uid));
+                    const data= snap.exists()?(snap.data() as any):null;
+                    const name = (data?.displayName as string | undefined)?.trim();
+                    if(name) {
+                        setUserName(name)
+                        return;
+                    }
+                } catch{
+                    }
+                    const email = user.email || "";
+                    const nameFromEmail = email.split("@")[0];
+                    const derivedName = nameFromEmail? nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1): "Student";
+                    setUserName(derivedName);
+                })();
+            });
+        return unsubscribe;
+                },[router]);
   //Show placeholder speak alert
   const onSpeak = () => {Alert.alert("Ai speech feature coming soon");}; // Placeholder for the SPEAK button action
 
@@ -44,7 +64,7 @@ export default function Home() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }] }>
-        <Text style={[styles.welcometext]}> Welcome, {userEmail}</Text>
+        <Text style={[styles.welcometext]}> Welcome, {userName}</Text>
       {/* Top Left: Setting */}
       <TouchableOpacity style={[styles.topButton, styles.topLeft, { borderColor: colors.border, backgroundColor: colors.card }]} onPress={onSetting} activeOpacity={0.8}>
         <Ionicons name="settings-outline" size={18} color={typeof colors.text === 'string' ? colors.text as string : undefined} style={styles.icon} />

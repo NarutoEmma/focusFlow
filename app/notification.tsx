@@ -2,9 +2,9 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert} from "react-native";
 import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
-import { useTheme } from "./theme";
+import { useTheme } from "../utils/theme";
 import {useRouter} from "expo-router";
-import {auth, db} from "./firebase";
+import {auth, db} from "../utils/firebase";
 import {getDocs,collection, onSnapshot, orderBy, query, writeBatch} from "firebase/firestore";
 
 type NotificationItem= {

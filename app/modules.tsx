@@ -1,10 +1,10 @@
 import React,{useState, useEffect} from "react";
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, Alert, ActivityIndicator} from "react-native";
-import { useTheme } from "./theme";
+import { useTheme } from "../utils/theme";
 import { Ionicons } from "@expo/vector-icons";
 
 //firebase
-import { db, auth } from "./firebase";
+import { db, auth } from "../utils/firebase";
 import {writeBatch,getDoc, collection, addDoc, query, onSnapshot,deleteDoc, doc, orderBy,serverTimestamp,where, getDocs} from "firebase/firestore";
 
 //add a notification document for a module

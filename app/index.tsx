@@ -1,9 +1,9 @@
 /*
-  Beginner-friendly guide to this file (Login screen):
+  Beginner-friendly guide to this file (Index screen):
   - Lines below import React, some UI components from React Native, and a navigation helper from expo-router.
-  - Then we define a component called Login which is the default export for this file.
+  - Then we define a component called Index which is the default export for this file.
   - Inside it, we keep track of what the user types for email and password using React "state".
-  - We also grab a router object so we can move to the Home screen when the user presses Login.
+  - We also grab a router object so we can move to the Home screen when the user presses Index.
   - The returned JSX describes how the screen looks: a container, a form, two text inputs, and a button.
   - At the bottom, we define styles (like CSS for React Native) using StyleSheet.create.
 */
@@ -17,7 +17,7 @@ import {signInWithEmailAndPassword} from "firebase/auth";
 import {auth} from "../utils/firebase"
 
 //login screen component
-export default function Login() { // Define the main component for this screen
+export default function Index() { // Define the main component for this screen
   const [email, setEmail] = useState(""); // email will store what's typed in the Email field
   const [password, setPassword] = useState(""); // password will store what's typed in the Password fiel
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ export default function Login() { // Define the main component for this screen
   const { colors } = useTheme();
 
   //handle login and navigate to home
-  const onLogin = async () => { // Function that runs when the Login button is pressed
+  const onLogin = async () => { // Function that runs when the Index button is pressed
     //navigate to Home page
     if(email===""||password===""){
         Alert.alert("please enter both email and password")
@@ -85,6 +85,14 @@ export default function Login() { // Define the main component for this screen
                   <Text style = {styles.buttonText}>Login</Text>
           )}
         </TouchableOpacity>
+
+        {/* Sign up prompt */}
+        <View style={styles.signupRow}>
+          <Text style={[styles.signupText, { color: colors.subtleText as string | undefined }]}>Don’t have an account? </Text>
+          <TouchableOpacity onPress={() => router.push("/signup")} activeOpacity={0.7}>
+            <Text style={[styles.signupLink, { color: colors.primary as string | undefined }]}>Sign up</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -134,5 +142,18 @@ const styles = StyleSheet.create({
     color: "white", // White text on the button
     fontWeight: "700", // Bold text
     fontSize: 16, // Slightly larger text
+  },
+  signupRow: {
+    marginTop: 16,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  signupText: {
+    fontSize: 14,
+  },
+  signupLink: {
+    fontSize: 14,
+    fontWeight: "700",
   },
 });
