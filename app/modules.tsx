@@ -5,7 +5,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 //firebase
 import { db, auth } from "../utils/firebase";
-import {writeBatch, collection, addDoc, query, onSnapshot,deleteDoc, doc, orderBy,serverTimestamp,where, getDocs} from "firebase/firestore";
+import {writeBatch, collection, addDoc, query, onSnapshot,deleteDoc, doc, orderBy,serverTimestamp,where, getDocs, updateDoc} from "firebase/firestore";
 
 //add a notification document for a module
 async function addNotificationForModule(uid: string, data: {
@@ -27,7 +27,6 @@ const startDate= (d:Date)=> new Date(d.getFullYear(),d.getMonth(),d.getDate());
 function daysUntilDue(dueDate: Date) {
     const today = startDate(new Date());
     const end = startDate(dueDate);
-    // fix: divide before Math.ceil to avoid huge numbers
     return Math.ceil((end.getTime() - today.getTime()) / MS_PER_DAY);
 }
 function computeColorFromDueDate(dueDate: Date | null, completed: boolean|undefined): "red"|"orange"|"green" {
@@ -39,7 +38,6 @@ function computeColorFromDueDate(dueDate: Date | null, completed: boolean|undefi
     return "orange";
 }
 
-//modules creation and management
 export default function Modules(){
     const { colors } = useTheme();
 
@@ -52,6 +50,7 @@ export default function Modules(){
     //state for add module popup
     const[isModalVisible,setIsModalVisible]=useState(false);
     const[newTitle,setNewTitle]=useState("");
+
     //calendar picker state
     const[dueDate,setDueDate]=useState<Date| null>(null);
     const[showDatePicker, setShowDatePicker] = useState(false);
@@ -154,6 +153,16 @@ export default function Modules(){
         ]);
     }
 
+    //toggle to show complete for a module (small box bottom-right)
+    const toggleCompleted = async (id: string, current: boolean | undefined) => {
+        if (!user) return;
+        try {
+            await updateDoc(doc(db, "users", user.uid, "modules", id), { completed: !current });
+        } catch (e: any) {
+            Alert.alert("Update failed", e?.message || "Please try again");
+        }
+    };
+
     return (
         //overall container: "Modules"
         <View
@@ -182,6 +191,24 @@ export default function Modules(){
                                         })()}
                                     </Text>
                                 )}
+                            </View>
+
+                            {/* tick box to signify completion of module  */}
+                            <View style={styles.completeBoxContainer}>
+                                <TouchableOpacity
+                                    accessibilityRole="checkbox"
+                                    accessibilityState={{ checked: !!item.completed }}
+                                    accessibilityLabel={item.completed ? "mark as not completed" : "mark as completed"}
+                                    activeOpacity={0.8}
+                                    onPress={() => toggleCompleted(item.id, item.completed)}
+                                    style={[
+                                        styles.completeBox,
+                                        {
+                                            borderColor: colors.border,
+                                            backgroundColor: item.completed ? "green" : "transparent",
+                                        }
+                                    ]}
+                                />
                             </View>
                         </TouchableOpacity>))}
                 </ScrollView>
@@ -302,6 +329,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: StyleSheet.hairlineWidth,
         marginBottom: 12,
+        position: "relative", // allow absolute positioned completed box
     },
     // Smaller rectangle on the left (color from item)
     colorSquare: {
@@ -333,6 +361,19 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "700",
         letterSpacing: 0.5,
+    },
+
+    // Completed tick box
+    completeBoxContainer: {
+        position: "absolute",
+        bottom: 10,
+        right: 12,
+    },
+    completeBox: {
+        width: 22,
+        height: 22,
+        borderWidth: 2,
+        borderRadius: 6,
     },
 
     windowOverlay:{

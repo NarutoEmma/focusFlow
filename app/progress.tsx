@@ -13,6 +13,23 @@ function isModuleColor(value: any): value is ModuleColor {
     return value === "red" || value === "orange" || value === "green";
 }
 
+//compute color from due date
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+function daysUntilDue(dueDate: Date) {
+    const today = startOfDay(new Date());
+    const end = startOfDay(dueDate);
+    return Math.ceil((end.getTime() - today.getTime()) / MS_PER_DAY);
+}
+function computeColorFromDueDate(dueDate: Date | null, completed: boolean | undefined): ModuleColor {
+    if (completed) return "green";
+    if (!dueDate) return "orange";
+    const d = daysUntilDue(dueDate);
+    if (d < 7) return "red";
+    if (d < 20) return "orange";
+    return "orange";
+}
+
 //progress screen with simple bar chart
 export default function Progress() {
     const {colors} = useTheme();
@@ -44,27 +61,31 @@ export default function Progress() {
     const counts = useMemo(() => {
         const base = {red: 0, orange: 0, green: 0} as Record<ModuleColor, number>;
         for (const m of modules) {
-            const c = m.color;
-            if (isModuleColor(c)) {base[c] += 1;}
+            // Normalize due date from Firestore (Timestamp | string | number)
+            let due: Date | null = null;
+            const raw = (m as any).dueDate ?? (m as any).dueAt ?? (m as any).due;
+            if (raw?.toDate) due = raw.toDate();
+            else if (typeof raw === "string" || typeof raw === "number") due = new Date(raw);
+
+            const color = computeColorFromDueDate(due, m.completed);
+            if (isModuleColor(color)) base[color] += 1;
         }
         return base;
     }, [modules]);
 
     //represent modules by the three canonical color
-
     const items: { key: "red" | "orange" | "green"; label: string; color: string }[] = [
         {key: "red", label: "Urgent", color: "red"},
         {key: "orange", label: "Due soon", color: "orange"},
         {key: "green", label: "Completed", color: "green"},
-
     ];
-const maxVal= Math.max(1, ...items.map((i)=> counts[i.key]));
-const chartHeight =180;
+    const maxVal= Math.max(1, ...items.map((i)=> counts[i.key]));
+    const chartHeight =180;
 
-//show count alert for a bar
-const onPressBar=(key:ModuleColor) => {
-    Alert.alert(items.find((i)=> i.key === key)!.label,`${counts[key]} module(s)`);
-}
+    //show count alert for a bar
+    const onPressBar=(key:ModuleColor) => {
+        Alert.alert(items.find((i)=> i.key === key)!.label,`${counts[key]} module(s)`);
+    }
 
     return (
         <View style={[styles.container, {backgroundColor: colors.background}]}>
@@ -105,12 +126,11 @@ const onPressBar=(key:ModuleColor) => {
                 </View>
             )}
             <Text style={[styles.hint, {color: (colors.subtleText as string) || "gray"}]}>
-                Tap a bar to see the count. Add modules and set their color (red/orange/green) to update the chart.
+                Tap a bar to see the count. Add modules and set their due date; status is computed automatically.
             </Text>
         </View>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 16, borderWidth: 2, borderRadius: 10 },

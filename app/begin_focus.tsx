@@ -38,7 +38,13 @@ const daysUntil = (due: Date | null) => {
     return Math.ceil((end.getTime() - today.getTime()) / MS_PER_DAY);
 };
 
-type ModuleSummary = { id: string; title: string; dueDate?: Date | null; daysLeft?: number | null };
+type ModuleSummary = {
+    id: string;
+    title: string;
+    dueDate?: Date | null;
+    daysLeft?: number | null
+    completed?: boolean;
+};
 
 const initialWelcomeMessage: Message={
         id: "m1",
@@ -131,7 +137,8 @@ export default function BeginFocus() {
                     id: d.id,
                     title: data.title,
                     dueDate: due,
-                    daysLeft: daysUntil(due)
+                    daysLeft: daysUntil(due),
+                    completed: data.completed,
                 };
                 });
             setModules(list);
@@ -188,6 +195,7 @@ export default function BeginFocus() {
                     title: m.title,
                     daysLeft: m.daysLeft,
                     dueDate: m.dueDate ? m.dueDate.toISOString() : null,
+                    completed: !!m.completed,
                 }))
                 const response = await fetch(API_URL!,{
                     method: "POST",
