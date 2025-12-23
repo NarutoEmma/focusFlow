@@ -185,7 +185,7 @@ export default function BeginFocus() {
             setMessages(nextMessage);
             setText("");
             setSending(true);
-
+//update
             try{
                 const key = userStorageKey(uid)!;
                 await AsyncStorage.setItem(key, JSON.stringify(nextMessage)).catch(()=>{});
