@@ -1,7 +1,7 @@
 // Begin Focus: chat UI with bottom input bar
 import React, { useRef, useState, useEffect } from "react";
 import {
-  View, StyleSheet, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, FlatList, Text,
+    View, StyleSheet, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, FlatList, Text, Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as Speech from "expo-speech"
@@ -88,6 +88,7 @@ export default function BeginFocus() {
     const insets = useSafeAreaInsets();
     const listRef = useRef<FlatList<Message>>(null);
     const { colors } = useTheme();
+    const onSpeak = () => {Alert.alert("voice feature coming soon");};
 
     //Keyboard offset
     const keyboardOffset = Platform.select({ ios: headerHeight, android: headerHeight + 8 }) as number;
@@ -323,7 +324,7 @@ export default function BeginFocus() {
                         />
 
                         <View style={styles.rightIcons}>
-                            <TouchableOpacity accessibilityLabel="Voice input" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                            <TouchableOpacity accessibilityLabel="Voice input" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} onPress={onSpeak}>
                                 <Ionicons name="mic-outline" size={20} color={typeof colors.text === 'string' ? colors.text as string : undefined} />
                             </TouchableOpacity>
                             <View style={{ width: 12 }} />

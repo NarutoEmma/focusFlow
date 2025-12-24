@@ -1,13 +1,23 @@
 
 import React, {useState} from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert, StyleSheet, Switch } from "react-native";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    ActivityIndicator,
+    Alert,
+    StyleSheet,
+    Switch,
+    Modal,
+    TextInput
+} from "react-native";
 import { useTheme } from "../utils/theme";
 import {useRouter} from "expo-router";
 import {auth,db} from "@/utils/firebase";
 import {
     deleteUser,
-    signOut
-}from "firebase/auth";
+    signOut,
+    updatePassword} from "firebase/auth";
 import {
     collection,
     getDocs,
@@ -22,6 +32,11 @@ export default function Setting() {
   const [loggingOut, setLoggingOut] = useState(false);
   const[Deleting, setDeleting]=useState(false);
   const[Userdelete, setDeleteUser]=useState(false);
+
+  //password change modal state
+    const [showPassword, setShowPassword] = useState(false);
+    const [newPassword, setNewPassword] = useState("");
+    const[savingPassword, setSavingPassword] = useState(false);
 
   const handleLogot = async()=>{
       try{
@@ -77,6 +92,30 @@ export default function Setting() {
       );
   }
 
+  const handleSaveNewPassword = async () => {
+      const user = auth.currentUser;
+      if(!user){
+          Alert.alert("you are not signed in currently", "please sign-in and try again later");
+      return;}
+
+      const password= newPassword.trim();
+      if(password.length < 6){
+          Alert.alert("password must be at least 6 characters");
+          return;
+      }
+      try{
+          setSavingPassword(true);
+          await updatePassword(user, password);
+          Alert.alert("Password changed successfully");
+          setShowPassword(false);
+          setNewPassword("");
+      }catch(e:any){
+          Alert.alert("failed to change password", e.message || "please try again later");
+      }finally{
+          setSavingPassword(false);
+      }
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }] }>
       {/* First big rectangle */}
@@ -87,8 +126,10 @@ export default function Setting() {
         </View>
         <View style={[styles.separator, { backgroundColor: colors.border }]} />
         <View style={styles.itemRow}>
-          <Text style={[styles.icon, { color: colors.text }]}>🛡️</Text>
-          <Text style={[styles.itemText, { color: colors.text }]}>Password and security</Text>
+            <TouchableOpacity style={styles.itemRow} activeOpacity={0.8} onPress={() => setShowPassword(true)}>
+                <Text style={[styles.icon, { color: colors.text }]}>🛡️</Text>
+                <Text style={[styles.itemText, { color: colors.text }]}>Password and security</Text>
+            </TouchableOpacity>
         </View>
         <View style={[styles.separator, { backgroundColor: colors.border }]} />
         <View style={styles.itemRow}>
@@ -123,6 +164,41 @@ export default function Setting() {
         activeOpacity={0.8}>
             {loggingOut? <ActivityIndicator color="white" size="small"/>:<Text style={styles.logoutText}>Logout</Text>}
         </TouchableOpacity>
+
+        {/*password change modal*/}
+        <Modal visible={showPassword} animationType="slide" onRequestClose={()=>setShowPassword(false)}
+               transparent={true}>
+            <View style={styles.modalOverlay}>
+                <View style={[styles.modalCard,{backgroundColor: colors.card}]}>
+                    <Text style={[styles.modalTitle,{color: colors.text}]}> Change Password</Text>
+                    <TextInput style={[styles.input, {borderColor: colors.border, color: colors.text}]}
+                               secureTextEntry
+                               placeholder="Enter new password"
+                               value={newPassword}
+                               onChangeText={setNewPassword}
+                               placeholderTextColor="lightgray"/>
+                    <View style={styles.modalButtons}>
+                        <TouchableOpacity
+                            style={[styles.modalButton, {backgroundColor: "lightgray"}]}
+                            onPress={()=>{
+                                setShowPassword(false);
+                                setNewPassword("");
+                            }}
+                            disabled={savingPassword}>
+                            <Text style={{fontWeight: "700"}}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.modalButton,{backgroundColor: "black"}]}
+                                          onPress={handleSaveNewPassword}
+                                          disabled={savingPassword}
+                                          >
+                            {savingPassword?(<ActivityIndicator color="white" size="small"/>):(
+                                <Text style={{color: "white", fontWeight: "700"}}>Save</Text>
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
     </View>
 
   );
@@ -206,4 +282,43 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: "gainsboro",
   },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        alignItems: "center",
+        justifyContent: "center",
+        paddingHorizontal: 24,
+    },
+    modalCard: {
+        width: "100%",
+        maxWidth: 420,
+        borderRadius: 16,
+        padding: 16,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: "800",
+        marginBottom: 12,
+        textAlign: "center",
+    },
+    input: {
+        width: "100%",
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        marginBottom: 16,
+        color: "black",
+    },
+    modalButtons: {
+        flexDirection: "row",
+        gap: 10,
+    },
+    modalButton: {
+        flex: 1,
+        height: 44,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 8,
+    },
 });
