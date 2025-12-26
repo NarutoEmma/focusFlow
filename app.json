@@ -13,13 +13,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "aliceblue",
+        "backgroundColor": "#f0f8ff",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.focusflow.app"
     },
     "web": {
       "output": "static",
@@ -33,9 +34,9 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "white",
+          "backgroundColor": "#ffffff",
           "dark": {
-            "backgroundColor": "black"
+            "backgroundColor": "#000000"
           }
         }
       ],
@@ -44,6 +45,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "06b86a6b-4741-4abe-929e-6f3b9a34382b"
+      }
     }
   }
 }

@@ -21,11 +21,7 @@ type Message = {
   text: string;
 };
 
-const API_URL= Platform.select({
-    ios: "http://192.168.0.19:3000/api/chat",
-    android: "http://192.168.0.19:3000/api/chat", // Android emulator
-    default: "http://192.168.0.19:3000/api/chat",
-})
+const API_URL= "https://focusflow-server-fktn.onrender.com/api/chat"
 const API_KEY= "my-very-secret-string";
 
 //helper to compute days left for each module
