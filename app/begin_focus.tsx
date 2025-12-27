@@ -245,7 +245,7 @@ export default function BeginFocus() {
             Speech.speak(text,{
                 language: "en-US",
                 pitch: 1.0,
-                rate: Platform.OS === "ios"? 1:2.0,
+                rate: Platform.OS === "ios"? 0.95:0.5,
                 onDone:()=> setSpeaking(false),
                 onError:()=> setSpeaking(false),
                 onStopped:() => setSpeaking(false),
