@@ -1,12 +1,3 @@
-/*
-  Beginner-friendly guide to this file (Index screen):
-  - Lines below import React, some UI components from React Native, and a navigation helper from expo-router.
-  - Then we define a component called Index which is the default export for this file.
-  - Inside it, we keep track of what the user types for email and password using React "state".
-  - We also grab a router object so we can move to the Home screen when the user presses Index.
-  - The returned JSX describes how the screen looks: a container, a form, two text inputs, and a button.
-  - At the bottom, we define styles (like CSS for React Native) using StyleSheet.create.
-*/
 import React, { useState } from "react"; // Import React and the useState hook to store input values
 import {Text, Alert, View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator} from "react-native"; // Import basic UI building blocks
 import { useRouter } from "expo-router"; // Import navigation helper to move between screens
@@ -17,15 +8,15 @@ import {signInWithEmailAndPassword} from "firebase/auth";
 import {auth} from "../utils/firebase"
 
 //login screen component
-export default function Index() { // Define the main component for this screen
-  const [email, setEmail] = useState(""); // email will store what's typed in the Email field
-  const [password, setPassword] = useState(""); // password will store what's typed in the Password fiel
+export default function Index() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter(); // router lets us navigate to other screens
+  const router = useRouter();
   const { colors } = useTheme();
 
   //handle login and navigate to home
-  const onLogin = async () => { // Function that runs when the Index button is pressed
+  const onLogin = async () => {
     //navigate to Home page
     if(email===""||password===""){
         Alert.alert("please enter both email and password")
@@ -48,31 +39,31 @@ export default function Index() { // Define the main component for this screen
     }
   };
 
-  return ( // Describe what we want to show on the screen
+  return (
     <View style={[styles.container, { backgroundColor: colors.background }] }>
       <View style={styles.form}>
         <Text style={[styles.title, { color: colors.text }]}>WELCOME TO FOCUSFLOW</Text>
 
         <TextInput
-          style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]} // Use the input style defined below
-          placeholder="Email" // Placeholder text inside the input
-          placeholderTextColor={typeof colors.subtleText === 'string' ? colors.subtleText as string : undefined} // Placeholder color
-          keyboardType="email-address" // Shows an email-friendly keyboard on phones
-          autoCapitalize="none" // Do not auto-capitalize text
-          autoCorrect={false} // Do not auto-correct text
-          value={email} // Bind the input value to our email state
-          onChangeText={setEmail} // Update email state whenever the user types
+          style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
+          placeholder="Email"
+          placeholderTextColor={typeof colors.subtleText === 'string' ? colors.subtleText as string : undefined}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          value={email}
+          onChangeText={setEmail}
         />
 
         <TextInput
           style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
           placeholder="Password"
           placeholderTextColor={typeof colors.subtleText === 'string' ? colors.subtleText as string : undefined}
-          secureTextEntry // Hide the characters as dots for privacy
+          secureTextEntry //hide password characters as dots for privacy
           autoCapitalize="none"
           autoCorrect={false}
-          value={password} // Bind the input value to our password state
-          onChangeText={setPassword} // Update password state whenever the user types
+          value={password}
+          onChangeText={setPassword}
         />
 
         <TouchableOpacity style={[styles.button, {opacity: loading ? 0.7:1}]}
@@ -86,7 +77,7 @@ export default function Index() { // Define the main component for this screen
           )}
         </TouchableOpacity>
 
-        {/* Sign up prompt */}
+        {/*sign up prompt */}
         <View style={styles.signupRow}>
           <Text style={[styles.signupText, { color: colors.subtleText as string | undefined }]}>Don’t have an account? </Text>
           <TouchableOpacity onPress={() => router.push("/signup")} activeOpacity={0.7}>
@@ -98,50 +89,50 @@ export default function Index() { // Define the main component for this screen
   );
 }
 
-// Styles for the screen (similar to CSS but in JavaScript)
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Take up the full screen height
-    justifyContent: "center", // Center content vertically
-    alignItems: "center", // Center content horizontally
-    paddingHorizontal: 24, // Add space on the left/right
-    backgroundColor: "white", // White background
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    backgroundColor: "white",
       borderWidth: 2,
       borderRadius: 10,
   },
   form: {
-    width: "100%", // Let the form stretch
-    maxWidth: 360, // But not wider than 360 pixels
-    alignItems: "stretch", // Children can stretch to the full width
+    width: "100%",
+    maxWidth: 360,
+    alignItems: "stretch",
   },
   title: {
-    textAlign: "center", // Center the title text
-    fontSize: 22, // Make it larger
-    fontWeight: "700", // Make it bold
-    marginBottom: 24, // Space below the title
-    color: "black", // Dark gray text color
+    textAlign: "center",
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 24,
+    color: "black",
   },
   input: {
-    height: 48, // Input height
-    borderColor: "lightgray", // Light gray border color
-    borderWidth: 1, // 1 pixel border
-    borderRadius: 8, // Rounded corners
-    paddingHorizontal: 12, // Space inside the input on left/right
-    marginBottom: 12, // Space below each input
-    backgroundColor: "white", // White background inside the input
+    height: 48,
+    borderColor: "lightgray",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    backgroundColor: "white",
   },
   button: {
-    height: 48, // Button height
-    borderRadius: 8, // Rounded corners
-    alignItems: "center", // Center the label horizontally
-    justifyContent: "center", // Center the label vertically
-    backgroundColor: "dodgerblue", // blue button
-    marginTop: 8, // Space above the button
+    height: 48,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "dodgerblue",
+    marginTop: 8,
   },
   buttonText: {
-    color: "white", // White text on the button
-    fontWeight: "700", // Bold text
-    fontSize: 16, // Slightly larger text
+    color: "white",
+    fontWeight: "700",
+    fontSize: 16,
   },
   signupRow: {
     marginTop: 16,

@@ -2,13 +2,12 @@ import React, {useEffect, useMemo, useState} from "react";
 import {ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useTheme} from "../utils/theme";
 
-//firebase
+//firebase imports
 import {auth, db} from "../utils/firebase";
 import {collection, onSnapshot, query} from "firebase/firestore";
 
 type ModuleColor = "red" | "orange" | "green";
 
-//type guard for module colors
 function isModuleColor(value: any): value is ModuleColor {
     return value === "red" || value === "orange" || value === "green";
 }
@@ -61,7 +60,7 @@ export default function Progress() {
     const counts = useMemo(() => {
         const base = {red: 0, orange: 0, green: 0} as Record<ModuleColor, number>;
         for (const m of modules) {
-            // Normalize due date from Firestore (Timestamp | string | number)
+            //normalize the due date from Firestore (timestamp | string | number)
             let due: Date | null = null;
             const raw = (m as any).dueDate ?? (m as any).dueAt ?? (m as any).due;
             if (raw?.toDate) due = raw.toDate();
@@ -73,7 +72,7 @@ export default function Progress() {
         return base;
     }, [modules]);
 
-    //represent modules by the three canonical color
+    //represent modules by the three different colors
     const items: { key: "red" | "orange" | "green"; label: string; color: string }[] = [
         {key: "red", label: "Urgent", color: "red"},
         {key: "orange", label: "Due soon", color: "orange"},

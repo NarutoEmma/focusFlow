@@ -7,13 +7,13 @@ import { useRouter } from "expo-router";
 import { useTheme } from "../utils/theme";
 import {doc, getDoc} from "firebase/firestore";
 
-//Home screen with navigation shortcuts
+//home screen with navigation shortcuts
 export default function Home() {
   const router = useRouter();
   const { colors } = useTheme();
   const [userName, setUserName] = useState("Student");
 
-  //check what user is logged in when the screen loads
+  //check which user is logged in when the screen loads
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth,(user) =>{
             if(!user ){
@@ -44,19 +44,19 @@ export default function Home() {
             });
         return unsubscribe;
                 },[router]);
-  //Show placeholder speak alert
+  //show placeholder speak alert
   const onSpeak = () => {Alert.alert("Ai speech feature coming soon");}; // Placeholder for the SPEAK button action
 
-    //Open notifications screen
+    //open notifications screen
   const onNotification = () => router.push("/notification"); // Go to the Notification screen
 
-    //Open settings screen
+    //open settings screen
   const onSetting = () => router.push("/setting"); // Go to the Setting screen
 
     //open begin focus screen
   const onBeginFocus = () => router.push("/begin_focus"); // Go to the Begin Focus chat screen
 
-    //Open modules screen
+    //open modules screen
   const onModules = () => router.push("/modules");
 
   //open progress screen
@@ -65,36 +65,36 @@ export default function Home() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }] }>
         <Text style={[styles.welcometext]}> Welcome, {userName}</Text>
-      {/* Top Left: Setting */}
+      {/*top left of the screen, etting */}
       <TouchableOpacity style={[styles.topButton, styles.topLeft, { borderColor: colors.border, backgroundColor: colors.card }]} onPress={onSetting} activeOpacity={0.8}>
         <Ionicons name="settings-outline" size={18} color={typeof colors.text === 'string' ? colors.text as string : undefined} style={styles.icon} />
         <Text style={[styles.topButtonText, { color: colors.text }]}>Setting</Text>
       </TouchableOpacity>
 
-      {/* Top Right: Notification */}
+      {/*top right of the screen, notification */}
       <TouchableOpacity style={[styles.topButton, styles.topRight, { borderColor: colors.border, backgroundColor: colors.card }]} onPress={onNotification} activeOpacity={0.8}>
         <Ionicons name="notifications-outline" size={18} color={typeof colors.text === 'string' ? colors.text as string : undefined} style={styles.icon} />
         <Text style={[styles.topButtonText, { color: colors.text }]}>Notification</Text>
       </TouchableOpacity>
 
-      {/* Center: Round Blue SPEAK Button */}
+      {/*center, round blue SPEAK Button */}
       <TouchableOpacity style={styles.speakButton} onPress={onSpeak} activeOpacity={0.8}>
         <Text style={styles.speakText}>SPEAK</Text>
       </TouchableOpacity>
 
-      {/* Add Modules */}
+      {/*add modules */}
       <TouchableOpacity style={styles.middleButton} onPress={onModules} activeOpacity={0.8}>
         <Text style={styles.middleButtonText}>Modules</Text>
       </TouchableOpacity>
 
-      {/* Opposite side: Project button with chart icon and text underneath */}
+      {/*Progress button with chart icon and text underneath */}
       <TouchableOpacity style={styles.projectButton} onPress={onProgress} activeOpacity={0.8}>
         <Ionicons name="stats-chart" size={18} color="white" style={styles.projectIcon} />
         <Text style={styles.projectButtonText}>Progress</Text>
       </TouchableOpacity>
 
 
-      {/* Bottom: Begin Focus Button */}
+      {/*bottom Begin Focus Button */}
       <TouchableOpacity style={styles.bottomButton} onPress={onBeginFocus} activeOpacity={0.8}>
         <Text style={styles.bottomButtonText}>Begin Focus</Text>
       </TouchableOpacity>
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "white",
   },
-  // Top rectangle buttons
+  //top rectangle buttons
   topButton: {
     position: "absolute",
     top: 40,
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textTransform: "none",
   },
-  // Center round SPEAK button
+  //center round SPEAK button
   speakButton: {
     width: 160,
     height: 160,
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 1,
   },
-  // Bottom begin focus button
+  //bottom begin focus button
   bottomButton: {
     position: "absolute",
     bottom: 40,

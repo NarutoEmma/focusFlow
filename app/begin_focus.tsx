@@ -1,4 +1,4 @@
-// Begin Focus: chat UI with bottom input bar
+//begin focus screen: chat with ai
 import React, { useRef, useState, useEffect } from "react";
 import {
     View, StyleSheet, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, FlatList, Text, Alert,
@@ -86,7 +86,7 @@ export default function BeginFocus() {
     const { colors } = useTheme();
     const onSpeak = () => {Alert.alert("voice feature coming soon");};
 
-    //Keyboard offset
+    //keyboard offset
     const keyboardOffset = Platform.select({ ios: headerHeight, android: headerHeight + 8 }) as number;
 
     const [modules, setModules] = useState<ModuleSummary[]>([]);
@@ -261,7 +261,7 @@ export default function BeginFocus() {
                         <Text style={[styles.messageText, isUser ? styles.userText : styles.aiText]}>{item.text}</Text>
                     </View>
 
-                    {/* Small microphone button to the right of AI messages for text-to-speech */}
+                    {/*small microphone button to the right of AI messages for text-to-speech */}
                     {!isUser && (
                         <TouchableOpacity
                             accessibilityLabel={speaking? "Stop Speech" : "Text to speech"}
@@ -334,7 +334,7 @@ export default function BeginFocus() {
         );
     }
 
-// Styles
+//styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

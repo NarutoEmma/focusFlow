@@ -14,7 +14,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTheme } from "../utils/theme";
 
-// Firebase
 import { auth, db } from "../utils/firebase";
 import {
     createUserWithEmailAndPassword,
@@ -70,7 +69,7 @@ export default function SignUp() {
             if (displayName.trim()) {
                 await updateProfile(cred.user, { displayName: displayName.trim() });
             }
-            //create profile in Firestore
+            //create user profile in Firestore
             await ensureUserDoc(cred.user.uid);
 
             try {
@@ -79,7 +78,7 @@ export default function SignUp() {
 
             router.replace("/home");
         } catch (e: any) {
-            let message = "Failed to create account. Please try again.";
+            let message = "failed to create account. Please try again.";
             switch (e?.code) {
                 case "auth/email-already-in-use":
                     message = "This email is already in use.";
@@ -190,7 +189,7 @@ export default function SignUp() {
                 </TouchableOpacity>
 
                 <Text style={[styles.hint, { color: colors.subtleText as string }]}>
-                    By creating an account, you agree to our Terms and Privacy Policy.
+                    by creating an account, you agree to our Terms and Privacy Policy.
                 </Text>
             </View>
         </KeyboardAvoidingView>
@@ -201,7 +200,7 @@ const styles = StyleSheet.create({
     container: { flex: 1, padding: 16, justifyContent: "center" },
     card: {
         borderWidth: 1,
-        borderRadius: 12,
+        borderRadius:0,
         padding: 16,
     },
     title: { fontSize: 22, fontWeight: "800", marginBottom: 16 },
@@ -225,7 +224,7 @@ const styles = StyleSheet.create({
     passwordInput: { flex: 1, paddingVertical: 10, fontSize: 16 },
     primaryButton: {
         height: 48,
-        borderRadius: 10,
+        borderRadius: 18,
         alignItems: "center",
         justifyContent: "center",
         marginTop: 4,

@@ -13,6 +13,8 @@ import {
 } from "react-native";
 import { useTheme } from "../utils/theme";
 import {useRouter} from "expo-router";
+
+//firebase imports
 import {auth,db} from "@/utils/firebase";
 import {
     deleteUser,
@@ -25,7 +27,7 @@ import {
     doc
 } from "firebase/firestore";
 
-//Settings screen with theme toggle
+//settings screen with the dark mode toggle
 export default function Setting() {
   const { isDark, toggleTheme, colors } = useTheme();
   const router = useRouter();
@@ -118,7 +120,7 @@ export default function Setting() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }] }>
-      {/* First big rectangle */}
+      {/*first big rectangle */}
       <View style={[styles.card, { backgroundColor: colors.card, shadowColor: "black" }]}>
         <View style={styles.itemRow}>
           <Text style={[styles.icon, { color: colors.text }]}>👔</Text>
@@ -138,7 +140,7 @@ export default function Setting() {
         </View>
       </View>
 
-      {/* Second big rectangle */}
+      {/*second big rectangle */}
       <View style={[styles.card, { backgroundColor: colors.card }]}>
         <View style={styles.itemRowBetween}>
           <Text style={[styles.itemText, { color: colors.text }]}>Toggle background</Text>
@@ -204,7 +206,7 @@ export default function Setting() {
   );
 }
 
-// Styles
+//styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

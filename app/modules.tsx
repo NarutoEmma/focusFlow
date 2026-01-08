@@ -3,11 +3,11 @@ import {View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, 
 import { useTheme } from "../utils/theme";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-//firebase
+//firebase imports
 import { db, auth } from "../utils/firebase";
 import {writeBatch, collection, addDoc, query, onSnapshot,deleteDoc, doc, orderBy,serverTimestamp,where, getDocs, updateDoc} from "firebase/firestore";
 
-//add a notification document for a module
+//add a notification document for any module created
 async function addNotificationForModule(uid: string, data: {
     text: string;
     type?: "reminder" | "system" | "ai" | "progress";
@@ -246,7 +246,7 @@ export default function Modules(){
                                 <DateTimePicker
                                     value={dueDate ?? new Date()}
                                     mode="date"
-                                    //fix crash on iOS: calendar display is Android-only. Use spinner/default on iOS.
+                                    //fix crash on iOS as the calendar display is Android-only, used spinner/default on iOS.
                                     display={Platform.OS === "ios" ? "spinner" : "calendar"}
                                     themeVariant={"light"}
                                     onChange={(event:any, date?:Date) => {
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     content: {
         padding: 16,
     },
-    // Each rectangle (module card)
+
     card: {
         flexDirection: "row",
         alignItems: "center",
@@ -329,9 +329,9 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: StyleSheet.hairlineWidth,
         marginBottom: 12,
-        position: "relative", // allow absolute positioned completed box
+        position: "relative",
     },
-    // Smaller rectangle on the left (color from item)
+
     colorSquare: {
         width: 28,
         height: 28,
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
     },
 
-    // Completed tick box
+
     completeBoxContainer: {
         position: "absolute",
         bottom: 10,

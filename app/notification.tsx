@@ -1,4 +1,4 @@
-//notification screen: scrollable list of simple card
+//notification screen, scrollable list of simple cards
 import React, {useEffect, useMemo, useState} from "react";
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert} from "react-native";
 import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
