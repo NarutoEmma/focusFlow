@@ -84,7 +84,7 @@ export default function Notification() {
         }
 
     }
-    //open modules screen for item
+    //open the modules screen for the notification item pressed
     const press = (item: NotificationItem) => {
         router.push({ pathname: "/modules", params: item.moduleId ? { moduleId: item.moduleId } : {} })
     };

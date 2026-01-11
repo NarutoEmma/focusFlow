@@ -24,11 +24,14 @@ async function addNotificationForModule(uid: string, data: {
 //compute color from due date
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const startDate= (d:Date)=> new Date(d.getFullYear(),d.getMonth(),d.getDate());
+
+//helper to calculate days remaining
 function daysUntilDue(dueDate: Date) {
     const today = startDate(new Date());
     const end = startDate(dueDate);
     return Math.ceil((end.getTime() - today.getTime()) / MS_PER_DAY);
 }
+//visual encoding logic to compute color from due date
 function computeColorFromDueDate(dueDate: Date | null, completed: boolean|undefined): "red"|"orange"|"green" {
     if(completed) return "green";
     if(!dueDate) return "orange";
@@ -59,6 +62,7 @@ export default function Modules(){
     useEffect(() => {
         if(!user) return;
 
+        //order modules by creation time for a consistent display
         const q = query(
             collection(db,"users", user.uid, "modules"),
             orderBy("createdAt", "desc")
