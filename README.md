@@ -1,50 +1,129 @@
-# Welcome to your Expo app 👋
+# 🎯 FocusFlow — AI-Powered Mobile Learning Companion
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A cross-platform mobile application designed to help students manage focus, reduce exam anxiety, and stay on top of their studies — powered by an adaptive AI assistant and real-time cloud sync.
 
-## Get started
+Built with React Native (Expo), TypeScript, Firebase Firestore, and Groq (LLaMA) for AI-driven interaction.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## 💡 Motivation
 
-2. Start the app
+Students often struggle not just with the content they're studying, but with *how* they study — poor time management, mounting anxiety, and no clear picture of their own progress. FocusFlow brings together AI assistance, progress tracking, and hands-free interaction into a single mobile experience built around how students actually work.
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## ✨ Features
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- 🤖 **AI-powered study assistant** — intelligent responses that adapt to the user's input, handling incomplete or noisy messages gracefully
+- 🎙️ **Hands-free interaction** — speech-to-text input and text-to-speech output for eyes-free study sessions
+- 📊 **Progress visualisation** — track assessments, scores, and improvement over time
+- ⏰ **Study reminders** — personalised reminders to keep users on schedule
+- ☁️ **Real-time cloud sync** — data stored and synced via Firebase Firestore
+- 📱 **Cross-platform** — runs on both iOS and Android via Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+## 🛠️ Tech Stack
 
-When you're ready, run:
+| Layer | Technology |
+|---|---|
+| Mobile Frontend | React Native (Expo), TypeScript |
+| Backend API | FastAPI / Node.js (deployed on Render) |
+| Database | Firebase Firestore |
+| AI Model | Groq API (LLaMA) |
+| Version Control | Git, GitHub |
+
+> 🔗 Backend repository: [FocusFlow_Server](https://github.com/NarutoEmma/FocusFlow_Server)
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js & Expo CLI
+- A Firebase project with Firestore enabled
+- Backend server running (see [FocusFlow_Server](https://github.com/NarutoEmma/FocusFlow_Server))
+
+---
+
+### 1. Clone the repository
 
 ```bash
-npm run reset-project
+git clone https://github.com/NarutoEmma/focusFlow.git
+cd focusFlow
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+### 2. Install dependencies
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+npm install
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+### 3. Configure environment
 
-Join our community of developers creating universal apps.
+Create a `.env` file in the root directory:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```env
+FIREBASE_API_KEY=your_firebase_api_key
+FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+FIREBASE_PROJECT_ID=your_project_id
+BACKEND_URL=https://your-render-deployment.onrender.com
+```
+
+---
+
+### 4. Run the app
+
+```bash
+npx expo start
+```
+
+Scan the QR code with the Expo Go app on your phone, or run on an emulator.
+
+---
+
+## 📁 Project Structure
+
+```
+focusFlow/
+├── app/                  # React Native screens
+├── components/           # Reusable UI components
+├── services/             # API calls and Firebase logic
+├── hooks/                # Custom React hooks
+├── assets/               # Images and fonts
+└── README.md
+```
+
+---
+
+## 🔗 Related
+
+- **Backend:** [FocusFlow_Server](https://github.com/NarutoEmma/FocusFlow_Server) — FastAPI/Node.js backend deployed on Render
+
+---
+
+## 🔮 Future Work
+
+- [ ] Spaced repetition flashcard system
+- [ ] Group study rooms with shared progress
+- [ ] Offline mode with local caching
+
+---
+
+## 👤 Author
+
+**Igwegbe Emmanuel**
+- GitHub: [@NarutoEmma](https://github.com/NarutoEmma)
+- LinkedIn: [emmanuel-igwegbe](https://www.linkedin.com/in/emmanuel-igwegbe-22b837347/)
+- Email: captainemm45@gmail.com
+
+---
+
+## 📄 Licence
+
+This project is for academic and portfolio purposes. Contact the author for any other use.
